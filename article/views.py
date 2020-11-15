@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Article
+import markdown
 # Create your views here.
 
 # 视图函数
@@ -11,3 +12,17 @@ def article_list(request):
     # render函数：载入模板，并返回context对象
     return render(request, 'article/list.html',context)
     # return render(request, 'base.html')
+
+
+def article_detail(request,id ):
+    article = Article.objects.get(id=id)
+    # 将markdown语法渲染成html样式
+    article.body = markdown.markdown(article.body,
+                                     extensions=[
+                                         # 包含 缩写、表格等常用扩展
+                                         'markdown.extensions.extra',
+                                         # 语法高亮扩展
+                                         'markdown.extensions.codehilite',
+                                     ])
+    context = {'article': article}
+    return render(request,'article/detail.html',context)
