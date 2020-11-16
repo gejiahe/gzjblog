@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+    文章详情
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mt-4 mb-4">
+                    {{ article.title }}
+            </div>
+            <div class="col-12 alert alert-success">
+                作者：{{ article.author }}
+                {# .<a href="{% url "article:article_delete" article.id %}">删除文章</a>#}
+{#                 .<a href="#" onclick="confirm_delete()">删除文章</a>#}
+{#                安全的删除方式#}
+                .<a href="#" onclick="confirm_safe_delete()">删除文章</a>
+                <form
+                    style="display: none;"
+                    id="safe_delete"
+                    action="{% url 'article:article_safe_delete' article.id %}"
+                    method="POST"
+                    >
+                    {% csrf_token %}
+                </form>
+
+            </div>
+            <div class="col-12">
+                <p>
+                    {{ article.body |safe }}
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        {# 不安全的删除方式，未调用#}
+        function confirm_delete() {
+            // 调用layer弹窗组件
+            layer.open(
+                {
+                    title:"确认删除",
+                    content:"确认删除这篇文章吗",
+                    yes:function (index,layero) {
+                        {#下面的url中的路由信息不能被删除或注释掉，冒号后面不能有空格#}
+                        location.href='{% url "article:article_delete" article.id%}'
+                    }
+                }
+            )
+        }
+        {#安全的删除方式#}
+        function confirm_safe_delete() {
+            layer.open({
+                title:"确认删除",
+                content:"确认删除这篇文章吗？",
+                yes:function (index,layero) {
+                    $('form#safe_delete button').click();
+                    layer.close(index);
+                }
+            })
+        }
+    </script>
+{% endblock %}
