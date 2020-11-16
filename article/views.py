@@ -1,5 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+from django.http import HttpResponse
 from .models import Article
+from .forms import ArticleForm
+from django.contrib.auth.models import User
 import markdown
 # Create your views here.
 
@@ -26,3 +29,42 @@ def article_detail(request,id ):
                                      ])
     context = {'article': article}
     return render(request,'article/detail.html',context)
+
+
+def article_create(request):
+    if request.method=="POST":
+        # 将提交的数据赋值到表单实例中
+        article_form=ArticleForm(data=request.POST)
+        # 判断提交的数据是否满足模型的要求
+        if article_form.is_valid():
+            # 保存数据，但暂时不提交到数据库中
+            new_article=article_form.save(commit=False)
+            # 指定数据库中 id=1 的用户为作者
+            new_article.author=User.objects.get(id=1)
+            # 将新文章保存到数据库中
+            new_article.save()
+            return redirect("article:article_list")
+        else:
+            return HttpResponse("表单内容有误，请重新填写")
+    else:
+        article_form=ArticleForm()
+        context = {"article_form":article_form}
+        return render(request,"article/create.html",context)
+
+# 普通不安全的删除方式
+def article_delete(request,id):
+    # 根据ID获取需要删除的文章
+    article=Article.objects.get(id=id)
+    # 调用.delete()方法删除文章
+    article.delete()
+    # 完成删除后返回文章列表
+    return redirect("article:article_list")
+
+# 安全的删除方式
+def article_safe_delete(request,id):
+    if request.method == "POST":
+        article=Article.objects.get(id=id)
+        article.delete()
+        return redirect("article:article_list")
+    else:
+        return HttpResponse("仅允许POST请求")
