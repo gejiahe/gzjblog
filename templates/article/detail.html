@@ -17,6 +17,7 @@
 {#                 .<a href="#" onclick="confirm_delete()">删除文章</a>#}
 {#                安全的删除方式#}
                 .<a href="#" onclick="confirm_safe_delete()">删除文章</a>
+                .<a href="{% url "article:article_update" article.id %}">更新文章</a>
                 <form
                     style="display: none;"
                     id="safe_delete"

@@ -68,3 +68,23 @@ def article_safe_delete(request,id):
         return redirect("article:article_list")
     else:
         return HttpResponse("仅允许POST请求")
+
+# 更新文章
+def article_update(request,id):
+    article=Article.objects.get(id=id)
+    if request.method== 'POST':
+        article_form=ArticleForm(data=request.POST)
+        if article_form.is_valid():
+            article.title=request.POST.get('title')
+            article.body=request.POST.get('body')
+            article.save()
+            return redirect("article:article_detail",id=id)
+        else:
+            return HttpResponse("表单内容有误，请重新填写。")
+    else:
+        # article_form=ArticleForm()
+        # context={"article":article,"article_form":article_form}
+        # article_form前端没有使用,不用传到前台
+        context={"article":article}
+        return render(request,"article/update.html",context)
+
