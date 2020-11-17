@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 应用配置
     'article',
+    'userprofile',
 ]
 
 MIDDLEWARE = [
