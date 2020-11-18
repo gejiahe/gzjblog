@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'password_reset',
     # 应用配置
     'article',
     'userprofile',
@@ -129,3 +130,16 @@ STATICFILES_DIRS=[
 # 媒体文件配置
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# SMTP服务器，改为你的邮箱的smtp!
+EMAIL_HOST = 'smtp.qq.com'
+# 改为你自己的邮箱名！
+EMAIL_HOST_USER = '2589641825@qq.com'
+# 你的邮箱密码
+EMAIL_HOST_PASSWORD = 'ypxrmfoyrikrdiba'
+# 发送邮件的端口
+EMAIL_PORT = 25
+# 是否使用 TLS，TLS与SSL在传输层对网络连接进行加密
+EMAIL_USE_TLS = True
+# 默认的发件人
+DEFAULT_FROM_EMAIL = 'Gzj的博客 <2589641825@qq.com>'
