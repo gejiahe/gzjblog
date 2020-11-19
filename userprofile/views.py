@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
 from django.http import HttpResponse
-from .forms import UserLoginForm,UserRegisterForm
+from .forms import UserLoginForm,UserRegisterForm,UserEditForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+
+from .models import User,Org
 # Create your views here.
 
 def user_login(request):
@@ -63,3 +64,38 @@ def user_delete(request,id):
             return HttpResponse("你没有删除操作的")
     else:
         return HttpResponse("仅接受post请求。")
+
+@login_required(login_url="/userprofile/login/")
+def user_edit(request,id):
+    user=User.objects.get(id=id)
+
+    # if request.method == "POST":
+    if request.method == 'POST':
+        if request.user != user:
+            return HttpResponse("你没有权限修改此用户信息！")
+        user_edit_form=UserEditForm(request.POST,request.FILES)
+        if user_edit_form.is_valid():
+            user_data=user_edit_form.cleaned_data
+            user.phone=user_data["phone"]
+            user.desc=user_data["desc"]
+            # print(user_data["org"])
+            # print(request.POST.get("org"))
+            # user.org=Org.objects.get(name=user_data["org"])
+            user.org=Org.objects.get(id=request.POST.get("org"))
+            if 'avatar' in request.FILES:
+                user.avatar = user_data["avatar"]
+
+            user.save()
+            return redirect("userprofile:edit",id=id)
+        else:
+            return HttpResponse("用户信息编辑有误，请重新输入")
+    elif request.method == "GET":
+        org_list=Org.objects.all()
+        context={"user":user,"org_list":org_list}
+        return render(request,"userprofile/edit.html",context)
+    else:
+        return HttpResponse("请使用GET或POST请求数据")
+
+
+
+

@@ -78,10 +78,21 @@ WSGI_APPLICATION = 'gzjblog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
+        'NAME': 'gzjblog',  # 你要存储数据的库名，事先要创建之
+        'USER':'root',    # 数据库用户名
+        'PASSWORD':'123456', # 密码
+        'HOST':'127.0.0.1',  # 主机
+        'PORT':'3306',       # 数据库使用的端口
     }
 }
 
@@ -143,3 +154,6 @@ EMAIL_PORT = 25
 EMAIL_USE_TLS = True
 # 默认的发件人
 DEFAULT_FROM_EMAIL = 'Gzj的博客 <2589641825@qq.com>'
+
+# 使用自定义的User模型
+AUTH_USER_MODEL="userprofile.User"

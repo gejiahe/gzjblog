@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from .models import User
 # 用户登录表单
 class UserLoginForm(forms.Form):
     username=forms.CharField()
@@ -21,3 +22,9 @@ class UserRegisterForm(forms.ModelForm):
             return data.get("password")
         else:
             raise forms.ValidationError("两次密码输入不一致，请重试。")
+
+# 用户编辑表单
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model=User
+        fields=("phone",'avatar',"desc","org")

@@ -2,7 +2,9 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import Article
 from .forms import ArticleForm
-from django.contrib.auth.models import User
+from userprofile.models import User
+from django.contrib.auth.decorators import login_required
+
 import markdown
 # Create your views here.
 
@@ -31,6 +33,7 @@ def article_detail(request,id ):
     return render(request,'article/detail.html',context)
 
 
+@ login_required(login_url='/userprofile/login/')
 def article_create(request):
     if request.method=="POST":
         # 将提交的数据赋值到表单实例中
@@ -40,7 +43,9 @@ def article_create(request):
             # 保存数据，但暂时不提交到数据库中
             new_article=article_form.save(commit=False)
             # 指定数据库中 id=1 的用户为作者
-            new_article.author=User.objects.get(id=1)
+            # new_article.author=User.objects.get(id=1)
+            new_article.author=User.objects.get(id=request.user.id)
+
             # 将新文章保存到数据库中
             new_article.save()
             return redirect("article:article_list")

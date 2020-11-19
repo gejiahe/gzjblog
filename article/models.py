@@ -1,6 +1,13 @@
 from django.db import models
 from django.utils import  timezone
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+
+# from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model  # 要加上这句话不然会报错（1）
+User = get_user_model()
+
+
+# from userprofile.models import User
 
 # Create your models here.
 # tag（标签模型）
