@@ -49,7 +49,7 @@ class Article(models.Model):
     updated=models.DateTimeField(auto_now=True)
 
     class Meta:
-        # '-created' 表明数据应该以倒序排列
+        # '-updated' 表明数据应该以倒序排列
         ordering=('-updated',)
 
     def __str__(self):

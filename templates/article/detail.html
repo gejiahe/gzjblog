@@ -16,8 +16,11 @@
                 {# .<a href="{% url "article:article_delete" article.id %}">删除文章</a>#}
 {#                 .<a href="#" onclick="confirm_delete()">删除文章</a>#}
 {#                安全的删除方式#}
-                .<a href="#" onclick="confirm_safe_delete()">删除文章</a>
-                .<a href="{% url "article:article_update" article.id %}">更新文章</a>
+                {% if user == article.author %}
+                    .<a href="#" onclick="confirm_safe_delete()">删除文章</a>
+                    .<a href="{% url "article:article_update" article.id %}">更新文章</a>
+               {% endif %}
+
                 <form
                     style="display: none;"
                     id="safe_delete"
@@ -26,8 +29,13 @@
                     >
                     {% csrf_token %}
                 </form>
-
+                {#文章浏览量#}
+                <div>
+                    浏览：{{ article.total_views }}
+                </div>
             </div>
+
+
             <div class="col-12">
                 <p>
                     {{ article.body |safe }}

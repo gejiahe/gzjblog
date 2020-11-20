@@ -4,23 +4,40 @@ from .models import Article
 from .forms import ArticleForm
 from userprofile.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 import markdown
 # Create your views here.
 
 # 视图函数
 def article_list(request):
-    # 取出所有博客文章
-    articles = Article.objects.all()
+    if request.GET.get('order') == 'total_views':
+        articles = Article.objects.all().order_by('-total_views')
+        order='total_views'
+    else:
+        articles = Article.objects.all()
+        order='-updated'
+    # # 取出所有博客文章
+    # articles = Article.objects.all()
+    # # 每页显示3篇文章
+    paginator=Paginator(articles,3)
+    # 获取url中的页码
+    page=request.GET.get("page")
+    # 分页对象包含的文章返回
+    articles=paginator.get_page(page)
+    #
+    # articles= Paginator(Article.objects.all(), 3).get_page(request.GET.get("page"))
     # 需要传递给模板（templates）的对象
-    context = {'articles': articles}
+    context = {'articles': articles,"order":order}
     # render函数：载入模板，并返回context对象
     return render(request, 'article/list.html',context)
-    # return render(request, 'base.html')
 
 
 def article_detail(request,id ):
     article = Article.objects.get(id=id)
+    # 浏览量 +1
+    article.total_views += 1
+    article.save(update_fields=['total_views'])
     # 将markdown语法渲染成html样式
     article.body = markdown.markdown(article.body,
                                      extensions=[
@@ -66,17 +83,25 @@ def article_delete(request,id):
     return redirect("article:article_list")
 
 # 安全的删除方式
+@ login_required(login_url='/userprofile/login/')
 def article_safe_delete(request,id):
     if request.method == "POST":
         article=Article.objects.get(id=id)
+        # 过滤非作者的用户
+        if request.user != article.author:
+            return HttpResponse("抱歉，你无权修改这篇文章。")
         article.delete()
         return redirect("article:article_list")
     else:
         return HttpResponse("仅允许POST请求")
 
 # 更新文章
+@ login_required(login_url='/userprofile/login/')
 def article_update(request,id):
     article=Article.objects.get(id=id)
+    # 过滤非作者的用户
+    if request.user != article.author:
+        return HttpResponse("抱歉，你无权修改这篇文章。")
     if request.method== 'POST':
         article_form=ArticleForm(data=request.POST)
         if article_form.is_valid():
