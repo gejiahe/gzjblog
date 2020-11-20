@@ -8,38 +8,48 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-12 mt-4 mb-4">
-                    {{ article.title }}
-            </div>
-            <div class="col-12 alert alert-success">
-                作者：{{ article.author }}
-                {# .<a href="{% url "article:article_delete" article.id %}">删除文章</a>#}
-{#                 .<a href="#" onclick="confirm_delete()">删除文章</a>#}
-{#                安全的删除方式#}
-                {% if user == article.author %}
-                    .<a href="#" onclick="confirm_safe_delete()">删除文章</a>
-                    .<a href="{% url "article:article_update" article.id %}">更新文章</a>
-               {% endif %}
+            <div class="col-9">
+                <div class="col-12 mt-4 mb-4">
+                        <h2>{{ article.title }} </h2>
 
-                <form
-                    style="display: none;"
-                    id="safe_delete"
-                    action="{% url 'article:article_safe_delete' article.id %}"
-                    method="POST"
-                    >
-                    {% csrf_token %}
-                </form>
-                {#文章浏览量#}
-                <div>
-                    浏览：{{ article.total_views }}
+                </div>
+                <div class="col-12 alert alert-success">
+                    作者：{{ article.author }}
+                    {# .<a href="{% url "article:article_delete" article.id %}">删除文章</a>#}
+    {#                 .<a href="#" onclick="confirm_delete()">删除文章</a>#}
+    {#                安全的删除方式#}
+                    {% if user == article.author %}
+                        .<a href="#" onclick="confirm_safe_delete()">删除文章</a>
+                        .<a href="{% url "article:article_update" article.id %}">更新文章</a>
+                   {% endif %}
+
+                    <form
+                        style="display: none;"
+                        id="safe_delete"
+                        action="{% url 'article:article_safe_delete' article.id %}"
+                        method="POST"
+                        >
+                        {% csrf_token %}
+                    </form>
+                    {#文章浏览量#}
+                    <div>
+                        浏览：{{ article.total_views }}
+                    </div>
+                </div>
+                <div class="col-12">
+                    <p>
+                        {{ article.body |safe }}
+                    </p>
                 </div>
             </div>
 
 
-            <div class="col-12">
-                <p>
-                    {{ article.body |safe }}
-                </p>
+            <div class="col-3 mt-4">
+                <h4><strong>目录</strong></h4>
+                <hr>
+                <div>
+                    {{ toc|safe }}
+                </div>
             </div>
         </div>
     </div>
